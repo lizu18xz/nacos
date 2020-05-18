@@ -49,7 +49,8 @@ public class FailoverClosureImpl<T> implements FailoverClosure<T> {
     @Override
     public void run(Status status) {
         if (status.isOk()) {
-            future.complete(data);
+            boolean isSuccess = future.complete(data);
+            System.out.println("future.complete(data) : " + isSuccess);
             return;
         }
         final Throwable throwable = this.throwable;

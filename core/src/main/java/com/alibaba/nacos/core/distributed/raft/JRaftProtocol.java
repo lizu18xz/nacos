@@ -18,6 +18,7 @@ package com.alibaba.nacos.core.distributed.raft;
 
 import com.alibaba.nacos.common.model.RestResult;
 import com.alibaba.nacos.common.utils.ByteUtils;
+import com.alibaba.nacos.common.utils.NCompletableFuture;
 import com.alibaba.nacos.common.utils.ThreadUtils;
 import com.alibaba.nacos.consistency.LogFuture;
 import com.alibaba.nacos.consistency.ProtocolMetaData;
@@ -192,7 +193,7 @@ public class JRaftProtocol
 	public CompletableFuture<LogFuture> submitAsync(Log data) {
 		CompletableFuture<LogFuture> future = new CompletableFuture<>();
 		try {
-			raftServer.commit(data.getGroup(), data, new CompletableFuture<>())
+			raftServer.commit(data.getGroup(), data, new NCompletableFuture<>("JRaftProtocol-submitAsync-" + data.getKey()))
 					.whenComplete((response, throwable) -> {
 						try {
 							Object data1 = null;
