@@ -101,6 +101,7 @@ public class EventDispatcher {
         return serviceInfos;
     }
 
+    //处理服务变化
     public void serviceChanged(ServiceInfo serviceInfo) {
         if (serviceInfo == null) {
             return;

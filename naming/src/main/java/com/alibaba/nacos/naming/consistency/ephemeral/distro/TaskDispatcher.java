@@ -93,6 +93,7 @@ public class TaskDispatcher {
 
                     String key = queue.poll(partitionConfig.getTaskDispatchPeriod(),
                         TimeUnit.MILLISECONDS);
+                    System.out.println("key:"+key);
 
                     if (Loggers.DISTRO.isDebugEnabled() && StringUtils.isNotBlank(key)) {
                         Loggers.DISTRO.debug("got key: {}", key);
@@ -101,7 +102,7 @@ public class TaskDispatcher {
                     if (dataSyncer.getServers() == null || dataSyncer.getServers().isEmpty()) {
                         continue;
                     }
-
+                    System.out.println("dataSyncer.getServers():"+dataSyncer.getServers().size());
                     if (StringUtils.isBlank(key)) {
                         continue;
                     }
@@ -116,6 +117,7 @@ public class TaskDispatcher {
                     if (dataSize == partitionConfig.getBatchSyncKeyCount() ||
                         (System.currentTimeMillis() - lastDispatchTime) > partitionConfig.getTaskDispatchPeriod()) {
 
+                        //遍历所有nacos服务端,发送http请求同步数据
                         for (Member member : dataSyncer.getServers()) {
                             if (NetUtils.localServer().equals(member.getAddress())) {
                                 continue;

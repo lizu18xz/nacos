@@ -173,6 +173,7 @@ public class Service extends com.alibaba.nacos.api.naming.pojo.Service implement
             }
         }
 
+        //这里通知发送请求到客户端
         updateIPs(value.getInstanceList(), KeyBuilder.matchEphemeralInstanceListKey(key));
 
         recalculateChecksum();

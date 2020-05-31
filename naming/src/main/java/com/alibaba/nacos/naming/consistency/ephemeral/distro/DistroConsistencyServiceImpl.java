@@ -181,6 +181,8 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
 			return;
 		}
 
+		//如果之前已经注册过,则会调用下面的方法
+
 		notifier.addTask(key, ApplyAction.CHANGE);
 	}
 
