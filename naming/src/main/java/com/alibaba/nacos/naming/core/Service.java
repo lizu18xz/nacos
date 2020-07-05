@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+
 /**
  * Service of Nacos server side
  * <p>
@@ -199,6 +200,11 @@ public class Service extends com.alibaba.nacos.api.naming.pojo.Service implement
         return (healthyInstanceCount() * 1.0 / allIPs().size()) <= getProtectThreshold();
     }
 
+    /**
+     * instances 代表服务列表实例 localhost:8091:unknown:DEFAULT_1.0_true_false_DEFAULT,localhost:8093:unknown:DEFAULT_1.0_false_false_DEFAULT
+     * ephemeral  true
+     * clusterName  DEFAULT
+     * */
     public void updateIPs(Collection<Instance> instances, boolean ephemeral) {
         Map<String, List<Instance>> ipMap = new HashMap<>(clusterMap.size());
         for (String clusterName : clusterMap.keySet()) {

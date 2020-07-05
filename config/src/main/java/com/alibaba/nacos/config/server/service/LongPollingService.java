@@ -258,7 +258,10 @@ public class LongPollingService extends AbstractEventListener {
             // ignore
         } else {
             if (event instanceof LocalDataChangeEvent) {
+
                 LocalDataChangeEvent evt = (LocalDataChangeEvent)event;
+
+                //  //groupKey: test+DEFAULT_GROUP
                 scheduler.execute(new DataChangeTask(evt.groupKey, evt.isBeta, evt.betaIps));
             }
         }
@@ -302,9 +305,11 @@ public class LongPollingService extends AbstractEventListener {
         @Override
         public void run() {
             try {
+                //groupKey test+DEFAULT_GROUP
                 ConfigService.getContentBetaMd5(groupKey);
                 for (Iterator<ClientLongPolling> iter = allSubs.iterator(); iter.hasNext(); ) {
                     ClientLongPolling clientSub = iter.next();
+                    //groupKey test+DEFAULT_GROUP
                     if (clientSub.clientMd5Map.containsKey(groupKey)) {
                         // 如果beta发布且不在beta列表直接跳过
                         if (isBeta && !betaIps.contains(clientSub.ip)) {

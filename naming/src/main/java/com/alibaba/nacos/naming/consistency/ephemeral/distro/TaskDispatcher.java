@@ -91,18 +91,24 @@ public class TaskDispatcher {
 
                 try {
 
+                    //从队列获取 key 比如:com.alibaba.nacos.naming.iplist.ephemeral.public##DEFAULT_GROUP@@helloNacos
+
                     String key = queue.poll(partitionConfig.getTaskDispatchPeriod(),
                         TimeUnit.MILLISECONDS);
-                    System.out.println("key:"+key);
+
+                    //System.out.println("key:"+key);
 
                     if (Loggers.DISTRO.isDebugEnabled() && StringUtils.isNotBlank(key)) {
                         Loggers.DISTRO.debug("got key: {}", key);
                     }
 
+                    //dataSyncer.getServers() 获取集群nacos节点列表
                     if (dataSyncer.getServers() == null || dataSyncer.getServers().isEmpty()) {
                         continue;
                     }
-                    System.out.println("dataSyncer.getServers():"+dataSyncer.getServers().size());
+
+                    //System.out.println("dataSyncer.getServers():"+dataSyncer.getServers().size());
+
                     if (StringUtils.isBlank(key)) {
                         continue;
                     }

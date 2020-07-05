@@ -185,6 +185,9 @@ public class Cluster extends com.alibaba.nacos.api.naming.pojo.Cluster implement
         return ephemeralInstances.isEmpty() && persistentInstances.isEmpty();
     }
 
+    /**
+     * ips:localhost:8091:unknown:DEFAULT_1.0_true_false_DEFAULT,localhost:8092:unknown:DEFAULT_1.0_false_false_DEFAULT
+     * */
     public void updateIPs(List<Instance> ips, boolean ephemeral) {
 
         Set<Instance> toUpdateInstances = ephemeral ? ephemeralInstances : persistentInstances;

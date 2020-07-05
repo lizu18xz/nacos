@@ -20,7 +20,7 @@ public class Pub {
         //nacos的地址
         NamingService namingService= NacosFactory.createNamingService("localhost:8848");
         //发布服务到nacos  假设服务端口是8091
-        namingService.registerInstance(serviceName,"localhost",8093);
+        namingService.registerInstance(serviceName,"ddddddddd","localhost",8092);
 
         Thread.sleep(Integer.MAX_VALUE);
 

@@ -183,6 +183,7 @@ public class ClientWorker {
                 // reset so that server not hang this check
                 cache.setInitializing(true);
             } else {
+                //从磁盘中加载配置信息
                 cache = new CacheData(configFilterChainManager, agent.getName(), dataId, group, tenant);
                 // fix issue # 1317
                 if (enableRemoteSyncConfig) {
@@ -318,7 +319,7 @@ public class ClientWorker {
     public void checkConfigInfo() {
         // 分任务
         int listenerSize = cacheMap.get().size();
-        // 向上取整为批数
+        // 向上取整为批数       /3000
         int longingTaskCount = (int) Math.ceil(listenerSize / ParamUtil.getPerTaskConfigSize());
         if (longingTaskCount > currentLongingTaskCount) {
             for (int i = (int) currentLongingTaskCount; i < longingTaskCount; i++) {
@@ -504,6 +505,7 @@ public class ClientWorker {
             List<String> inInitializingCacheList = new ArrayList<String>();
             try {
                 // check failover config
+                //根据taskId获取配置 通过taskId从 cacheMap中获取需要被当前LongPollingRunnable任务处理的配置,放入到cacheDatas集合。
                 for (CacheData cacheData : cacheMap.get().values()) {
                     if (cacheData.getTaskId() == taskId) {
                         cacheDatas.add(cacheData);
@@ -518,7 +520,7 @@ public class ClientWorker {
                     }
                 }
 
-                // check server config
+                // check server config  向服务端请求变化的配置
                 List<String> changedGroupKeys = checkUpdateDataIds(cacheDatas, inInitializingCacheList);
                 if (!CollectionUtils.isEmpty(changedGroupKeys)) {
                     LOGGER.info("get changedGroupKeys:" + changedGroupKeys);

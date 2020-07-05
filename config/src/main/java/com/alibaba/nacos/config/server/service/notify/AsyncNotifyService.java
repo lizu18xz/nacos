@@ -71,6 +71,7 @@ public class AsyncNotifyService extends AbstractEventListener {
 		return types;
 	}
 
+	//发布一个名为 ConfigDataChangeEvent 的事件，这个事件会通过 HTTP 调用通知所有集群节点（包括自身），触发本地文件和内存的刷新。
 	@Override
 	public void onEvent(Event event) {
 
@@ -82,6 +83,7 @@ public class AsyncNotifyService extends AbstractEventListener {
 			String group = evt.group;
 			String tenant = evt.tenant;
 			String tag = evt.tag;
+			//Member{address='192.168.31.192:8848'}
 			Collection<Member> ipList = memberManager.allMembers();
 
 			// 其实这里任何类型队列都可以
@@ -90,6 +92,7 @@ public class AsyncNotifyService extends AbstractEventListener {
 				queue.add(new NotifySingleTask(dataId, group, tenant, tag, dumpTs,
 						member.getAddress(), evt.isBeta));
 			}
+
 			EXECUTOR.execute(new AsyncTask(httpclient, queue));
 		}
 	}

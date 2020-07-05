@@ -78,8 +78,10 @@ public class ConfigService {
                         + "lastModifiedNew={}",
                     groupKey, md5, ConfigService.getLastModifiedTs(groupKey), lastModifiedTs);
             } else if (!PropertyUtil.isDirectRead()) {
+                //这里将配置写入磁盘
                 DiskUtil.saveToDisk(dataId, group, tenant, content);
             }
+            //这里触发LocalDataChangeEvent事件,对长连接的请求做返回处理。及时通知客户端,配置的变更
             updateMd5(groupKey, md5, lastModifiedTs);
             return true;
         } catch (IOException ioe) {
@@ -408,15 +410,6 @@ public class ConfigService {
         }
     }
 
-    public static void updateMd5(String groupKey, String md5, long lastModifiedTs) {
-        CacheItem cache = makeSure(groupKey);
-        if (cache.md5 == null || !cache.md5.equals(md5)) {
-            cache.md5 = md5;
-            cache.lastModifiedTs = lastModifiedTs;
-            EventDispatcher.fireEvent(new LocalDataChangeEvent(groupKey));
-        }
-    }
-
     public static void updateBetaMd5(String groupKey, String md5, List<String> ips4Beta, long lastModifiedTs) {
         CacheItem cache = makeSure(groupKey);
         if (cache.md54Beta == null || !cache.md54Beta.equals(md5)) {
@@ -425,6 +418,15 @@ public class ConfigService {
             cache.lastModifiedTs4Beta = lastModifiedTs;
             cache.ips4Beta = ips4Beta;
             EventDispatcher.fireEvent(new LocalDataChangeEvent(groupKey, true, ips4Beta));
+        }
+    }
+
+    public static void updateMd5(String groupKey, String md5, long lastModifiedTs) {
+        CacheItem cache = makeSure(groupKey);
+        if (cache.md5 == null || !cache.md5.equals(md5)) {
+            cache.md5 = md5;
+            cache.lastModifiedTs = lastModifiedTs;
+            EventDispatcher.fireEvent(new LocalDataChangeEvent(groupKey));
         }
     }
 
