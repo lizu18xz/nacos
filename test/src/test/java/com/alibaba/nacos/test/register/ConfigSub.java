@@ -27,7 +27,6 @@ public class ConfigSub {
             public Executor getExecutor() {
                 return null;
             }
-
             @Override
             public void receiveConfigInfo(String configInfo) {
 

@@ -102,6 +102,7 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
 
 	@PostConstruct
 	public void init() {
+	    //启动两个任务,一个进行从其他服务加载数据,一个进行监听配置的变更
 		GlobalExecutor.submit(loadDataTask);
 		GlobalExecutor.submitDistroNotifyTask(notifier);
 	}
@@ -167,8 +168,9 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
 		return dataStore.get(key);
 	}
 
+	//服务全名 和  实例列表
 	public void onPut(String key, Record value) {
-
+        //保存到内存中的map中
 		if (KeyBuilder.matchEphemeralInstanceListKey(key)) {
 			Datum<Instances> datum = new Datum<>();
 			datum.value = (Instances) value;
@@ -182,7 +184,6 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
 		}
 
 		//如果之前已经注册过,则会调用下面的方法
-
 		notifier.addTask(key, ApplyAction.CHANGE);
 	}
 
@@ -282,10 +283,12 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
 
 	public void processData(byte[] data) throws Exception {
 		if (data.length > 0) {
+		    //获取实例列表信息
 			Map<String, Datum<Instances>> datumMap = serializer
 					.deserializeMap(data, Instances.class);
 
 			for (Map.Entry<String, Datum<Instances>> entry : datumMap.entrySet()) {
+			    //1-将配置存入内存中
 				dataStore.put(entry.getKey(), entry.getValue());
 
 				if (!listeners.containsKey(entry.getKey())) {

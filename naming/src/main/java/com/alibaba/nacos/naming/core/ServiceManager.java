@@ -475,11 +475,13 @@ public class ServiceManager implements RecordListener<Service> {
         Service service = getService(namespaceId, serviceName);
 
         synchronized (service) {
+            //这里返回的是当前服务在集群中所有的服务列表信息
             List<Instance> instanceList = addIpAddresses(service, ephemeral, ips);
 
             Instances instances = new Instances();
             instances.setInstanceList(instanceList);
 
+            //这里会将最新的服务列表保存到内存,并且通知客户端的订阅者服务列表更新了
             consistencyService.put(key, instances);
         }
     }
@@ -530,7 +532,7 @@ public class ServiceManager implements RecordListener<Service> {
     public List<Instance> updateIpAddresses(Service service, String action, boolean ephemeral, Instance... ips) throws NacosException {
 
         Datum datum = consistencyService.get(KeyBuilder.buildInstanceListKey(service.getNamespaceId(), service.getName(), ephemeral));
-
+        //首先从服务对象中的Cluster中获取现有内存中保存的实例列表
         List<Instance> currentIPs = service.allIPs(ephemeral);
         Map<String, Instance> currentInstances = new HashMap<>(currentIPs.size());
         Set<String> currentInstanceIds = Sets.newHashSet();
@@ -549,6 +551,7 @@ public class ServiceManager implements RecordListener<Service> {
 
         for (Instance instance : ips) {
             if (!service.getClusterMap().containsKey(instance.getClusterName())) {
+                //这里可以看到每个服务的Service对象都根据ClusterName管理着一个Cluster,Cluster保存了当前服务所有的实例列表。也是就instance.
                 Cluster cluster = new Cluster(instance.getClusterName(), service);
                 cluster.init();
                 service.getClusterMap().put(instance.getClusterName(), cluster);
